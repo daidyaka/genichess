@@ -9,12 +9,8 @@ public class Application {
         System.out.println(board);
         System.out.println("===================");
 
-        board.move(Point.of(6, 0), Point.of(5, 0));
-        System.out.println(board);
-        System.out.println("===================");
-
-        board.move(Point.of(5, 0), Point.of(4, 0));
-        board.move(Point.of(7, 0), Point.of(5, 0));
+        board.move(Point.of(6, 0), Point.of(4, 0));
+        //TODO: check why white pawns can move to the side
         System.out.println(board);
     }
 

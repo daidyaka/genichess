@@ -6,4 +6,9 @@ import lombok.RequiredArgsConstructor;
 public class Point {
     public final int x;
     public final int y;
+
+    @Override
+    public String toString() {
+        return "(" + x + ";" + y + ")";
+    }
 }

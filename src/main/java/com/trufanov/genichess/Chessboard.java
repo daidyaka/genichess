@@ -64,48 +64,118 @@ public final class Chessboard {
 
     public void move(Point from, Point to) {
         if (!isValidPoint(from) || !isValidPoint(to) && (from.x != to.x && from.y != to.y)) {
-            System.out.println("PASHEL NAXUI");
+            System.out.println("Incorrect coordinates of the input points.");
             return;
         }
 
         Piece pieceFrom = board[from.x][from.y];
+
+        if (pieceFrom == null) {
+            throw new RuntimeException("Nothing to move.");
+        }
+
         boolean isPieceToPresent = board[to.x][to.y] != null;
 
         if (pieceFrom instanceof Pawn) {
-            if (from.x == to.x) { //moves forward
-                Piece.PieceColor pieceColor = pieceFrom.getColor();
-
-
-
-                if (Piece.PieceColor.WHITE == pieceColor && to.y - from.y > 1) {
-                    throw new RuntimeException("PASHEL NAXUI");
-                }
-
-                if (Piece.PieceColor.BLACK == pieceColor && from.y - to.y > 1) {
-                    throw new RuntimeException("PASHEL NAXUI");
-                }
-
-
-            } else if (Math.abs(from.x - to.x) == 1) {
-
-            } else {
-                throw new RuntimeException("PASHEL NAXUI");
-            }
+            movePawn(pieceFrom, from, to);
         } else if (pieceFrom instanceof Bishop) {
+            setPiece(to, board[from.x][from.y]);
+            setPiece(from, null);
 
         } else if (pieceFrom instanceof King) {
+            setPiece(to, board[from.x][from.y]);
+            setPiece(from, null);
 
         } else if (pieceFrom instanceof Queen) {
+            setPiece(to, board[from.x][from.y]);
+            setPiece(from, null);
 
         } else if (pieceFrom instanceof Knight) {
+            setPiece(to, board[from.x][from.y]);
+            setPiece(from, null);
 
         } else if (pieceFrom instanceof Rook) {
+            setPiece(to, board[from.x][from.y]);
+            setPiece(from, null);
 
         }
     }
 
+    private void movePawn(Piece pieceToMove, Point from, Point to) {
+        Piece.PieceColor color = pieceToMove.color;
+
+        if (color == Piece.PieceColor.WHITE) {
+
+            //white pawn is on start position
+            int xMove = from.x - to.x;
+            int yMove = Math.abs(from.y - to.y);
+            if (from.x == BOARD_SIZE - 2) {
+
+                //check if pawn is on start, so it can move on 1 or 2 squares forward
+                if (xMove == 1 || xMove == 2) {
+
+                    //if white pawn is on start and kills by diagonal
+                    if (xMove == 1 && yMove == 1 && !isSlotEmpty(to) && getPiece(to).color != Piece.PieceColor.WHITE) {
+                        setPiece(to, board[from.x][from.y]);
+                        setPiece(from, null);
+                        return;
+                    }
+
+                    //check if nothing is in front of pawn for move
+                    for (int i = 1; i < xMove; i++) {
+                        Point p = Point.of(from.x - i, from.y);
+                        if (!isSlotEmpty(p)) {
+                            throw new RuntimeException("Slot " + p + " is not empty");
+                        }
+                    }
+
+                    setPiece(to, board[from.x][from.y]);
+                    setPiece(from, null);
+                } else {
+                    throw new RuntimeException("Illegal move for pawn. Y > 2");
+                }
+            } else {
+                if (xMove != 1) {
+                    throw new RuntimeException("Illegal move for pawn. Y > 1");
+                }
+
+                //todo: add possibility to upgrade pawn if it is on the last line of the board
+                //pawn moves forward
+                if (yMove == 0) {
+                    if (!isSlotEmpty(to)) {
+                        throw new RuntimeException("Slot " + to + " is not empty");
+                    }
+                    setPiece(to, board[from.x][from.y]);
+                    setPiece(from, null);
+                } else if (yMove == 1 && getPiece(to).color != Piece.PieceColor.WHITE) {
+                    setPiece(to, board[from.x][from.y]);
+                    setPiece(from, null);
+                } else {
+                    throw new RuntimeException("Illegal move for pawn. X > 1");
+                }
+            }
+
+        } else { //black
+
+        }
+    }
+
+    private Piece getPiece(Point point) {
+        //todo: add validation for coords
+        return board[point.x][point.y];
+    }
+
+    private void setPiece(Point point, Piece piece) {
+        //todo: add validation for coords
+        board[point.x][point.y] = piece;
+    }
+
     private boolean isValidPoint(Point point) {
         return point.x >= 0 && point.x <= 7 && point.y >= 0 && point.y <= 7;
+    }
+
+    private boolean isSlotEmpty(Point point) {
+        return board[point.x][point.y] == null;
     }
 
     @Override
